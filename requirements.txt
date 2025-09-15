@@ -1,6 +1,3 @@
-# Upgrade pip first
---upgrade pip
-
 # Core app packages
 streamlit==1.28.0
 numpy==1.24.3
@@ -8,8 +5,7 @@ pandas==2.1.0
 matplotlib==3.7.2
 seaborn==0.13.0
 scikit-learn==1.3.0
-opencv-python-headless==4.8.1.78  # headless avoids GUI issues on Streamlit Cloud
+opencv-python-headless==4.8.1.78
 
-# TensorFlow CPU version (compatible with streamlit)
+# TensorFlow CPU version (compatible with Streamlit)
 tensorflow-cpu==2.14.0
-
