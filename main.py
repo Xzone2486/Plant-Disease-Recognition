@@ -139,7 +139,6 @@
 
     
 #GPT code
-!pip install tensorflow
 import streamlit as st
 import tensorflow as tf
 import numpy as np
