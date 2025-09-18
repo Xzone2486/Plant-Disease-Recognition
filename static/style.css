@@ -1,0 +1,63 @@
+:root {
+    --background: 120 20% 8%; --foreground: 120 15% 95%; --card: 120 15% 12%;
+    --card-foreground: 120 15% 95%; --primary: 120 60% 45%; --primary-foreground: 120 20% 5%;
+    --muted: 120 20% 15%; --muted-foreground: 120 10% 70%; --healthy: 120 70% 50%;
+    --diseased: 0 70% 55%; --border: 120 20% 25%;
+}
+html { scroll-behavior: smooth; scrollbar-width: none; }
+html::-webkit-scrollbar { display: none; }
+body {
+    font-family: 'Poppins', sans-serif;
+    color: hsl(var(--foreground));
+    min-height: 100vh;
+    overflow-x: hidden;
+    /* NOTE: You may need to adjust the path to your background image */
+    background-image: linear-gradient(rgba(8, 20, 10, 0.92), rgba(6, 15, 8, 0.96)), url('../static/hero-background.jpeg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+* { border-color: hsl(var(--border)); }
+.gradient-card { background: linear-gradient(145deg, hsla(120, 15%, 12%, 0.85) 0%, hsla(120, 20%, 8%, 0.85) 100%); }
+.gradient-nature { background: linear-gradient(135deg, hsl(120, 60%, 45%), hsl(120, 70%, 35%)); }
+.shadow-nature { box-shadow: 0 20px 40px -10px hsl(120 60% 15% / 0.3); }
+.shadow-glow { box-shadow: 0 0 30px hsl(120 60% 45% / 0.2); }
+.text-healthy { color: hsl(var(--healthy)); }
+.text-diseased { color: hsl(var(--diseased)); }
+
+.radar-ring {
+    position: absolute;
+    width: 0px;
+    height: 0px;
+    border-radius: 50%;
+    border: 2px solid hsl(var(--primary) / 0.5);
+    opacity: 0;
+}
+
+.btn-press:active {
+    transform: scale(0.96);
+    transition: transform 0.1s;
+}
+
+/* Styles for Toast Notifications */
+#toast-container {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+.toast {
+    width: 350px;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    background-color: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    transform: translateX(110%);
+}
+.toast.show {
+    transform: translateX(0);
+}

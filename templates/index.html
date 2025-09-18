@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Plant Disease Detector</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+</head>
+<body class="bg-background text-foreground">
+    
+    <div id="loader" class="fixed inset-0 z-[100] flex items-center justify-center bg-[hsl(var(--background))]">
+        <div id="loader-circle" class="relative w-48 h-48 bg-[hsl(var(--muted))] rounded-full flex items-center justify-center overflow-hidden">
+            <div class="radar-ring"></div>
+            <div class="radar-ring"></div>
+            <div class="radar-ring"></div>
+            
+            <svg version="1.1" id="loader-leaf" class="relative z-10 w-24 h-24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 501.6 501.6" style="enable-background:new 0 0 501.6 501.6;" xml:space="preserve">
+                <g class="stem-group"><path style="fill:#02243E;" d="M250.8,501.6c-2.4,0-4-1.6-4-4v-484c0-2.4,1.6-4,4-4s4,1.6,4,4v484 C254.8,499.2,253.2,501.6,250.8,501.6z"/><path style="fill:#02243E;" d="M250,448.8c-0.8,0-2.4,0-3.2-0.8l-100-100.8c-1.6-1.6-1.6-4,0-5.6s4-1.6,5.6,0l100,100 c1.6,1.6,1.6,4,0,5.6C252.4,448.8,250.8,448.8,250,448.8z"/><path style="fill:#02243E;" d="M250.8,321.6c-0.8,0-2.4,0-3.2-0.8L146.8,219.2c-1.6-1.6-1.6-4,0-5.6s4-1.6,5.6,0l100.8,100.8 c1.6,1.6,1.6,4,0,5.6C252.4,320.8,251.6,321.6,250.8,321.6z"/><path style="fill:#02243E;" d="M252.4,410.4c-0.8,0-2.4,0-3.2-0.8c-1.6-1.6-1.6-4,0-5.6l100-100c1.6-1.6,4-1.6,5.6,0s1.6,4,0,5.6 l-100,100C254,410.4,253.2,410.4,252.4,410.4z"/><path style="fill:#02243E;" d="M252.4,281.6c-0.8,0-2.4,0-3.2-0.8c-1.6-1.6-1.6-4,0-5.6l100-100c1.6-1.6,4-1.6,5.6,0s1.6,4,0,5.6 l-100,100C254,281.6,253.2,281.6,252.4,281.6z"/></g>
+                <g class="leaf-left"><path style="fill:#80BC2B;" d="M250.8,0c-12,30.4-35.2,62.4-43.2,101.6c-10.4,51.2,23.2,70.4,43.2,87.2V0z"/><path style="fill:#68A519;" d="M250.8,188.8V0c-12,30.4-35.2,62.4-43.2,101.6"/><path style="fill:#528C00;" d="M250.8,188.8V0c-12,30.4-17.6,85.6-25.6,124"/><path style="fill:#80BC2B;" d="M90.8,158.4c12,28.8,18.4,66.4,40,98.4c28,41.6,64,32,88.8,29.6L90.8,158.4z"/><path style="fill:#68A519;" d="M218.8,286.4l-128-128c12,28.8,18.4,66.4,40,98.4"/><path style="fill:#528C00;" d="M218.8,286.4l-128-128c12,28.8,45.6,69.6,67.2,101.6"/><path style="fill:#80BC2B;" d="M90.8,158.4c28.8,12,66.4,18.4,98.4,40c41.6,28,32,64,29.6,88.8L90.8,158.4z"/><path style="fill:#68A519;" d="M218.8,286.4l-128-128c28.8,12,66.4,18.4,98.4,40"/><path style="fill:#528C00;" d="M218.8,286.4l-128-128c28.8,12,69.6,45.6,101.6,67.2"/><path style="fill:#80BC2B;" d="M126.8,321.6c9.6,22.4,14.4,52,31.2,77.6c21.6,32.8,50.4,25.6,69.6,23.2L126.8,321.6z"/><path style="fill:#68A519;" d="M227.6,422.4L126.8,321.6c9.6,22.4,14.4,52,31.2,77.6"/><path style="fill:#528C00;" d="M227.6,422.4L126.8,321.6c9.6,22.4,36,55.2,52.8,80"/><path style="fill:#80BC2B;" d="M126.8,321.6c22.4,9.6,52,14.4,77.6,31.2c32.8,21.6,25.6,50.4,23.2,69.6L126.8,321.6z"/><path style="fill:#68A519;" d="M226.8,422.4l-100-100.8c22.4,9.6,52,14.4,77.6,31.2"/><path style="fill:#528C00;" d="M226.8,422.4l-100-100.8c22.4,9.6,55.2,36,80,52.8"/></g>
+                <g class="leaf-right"><path style="fill:#80BC2B;" d="M250.8,0c12,30.4,35.2,62.4,43.2,101.6c10.4,51.2-23.2,70.4-43.2,87.2V0z"/><path style="fill:#68A519;" d="M250.8,188.8V0c12,30.4,35.2,62.4,43.2,101.6"/><path style="fill:#528C00;" d="M250.8,188.8V0c12,30.4,17.6,85.6,25.6,124"/><path style="fill:#80BC2B;" d="M410.8,120c-12,28.8-18.4,66.4-40,98.4c-28,41.6-64,32-88.8,29.6L410.8,120z"/><path style="fill:#68A519;" d="M282.8,248l128-128c-12,28.8-18.4,66.4-40,98.4"/><path style="fill:#528C00;" d="M282.8,248l128-128c-12,28.8-45.6,69.6-67.2,101.6"/><path style="fill:#80BC2B;" d="M410.8,120c-28.8,12-66.4,18.4-98.4,40c-41.6,28-32,64-29.6,88.8L410.8,120z"/><path style="fill:#68A519;" d="M282.8,248l128-128c-28.8,12-66.4,18.4-98.4,40"/><path style="fill:#528C00;" d="M282.8,248l128-128c-28.8,12-69.6,45.6-101.6,67.2"/><path style="fill:#80BC2B;" d="M374.8,283.2c-9.6,22.4-14.4,52-31.2,77.6C322,393.6,293.2,386.4,274,384L374.8,283.2z"/><path style="fill:#68A519;" d="M274,384l100.8-100.8c-9.6,22.4-14.4,52-31.2,77.6"/><path style="fill:#528C00;" d="M274,384l100.8-100.8c-9.6,22.4-36,55.2-52.8,80"/><path style="fill:#80BC2B;" d="M374.8,283.2c-22.4,9.6-52,14.4-77.6,31.2C264.4,336,271.6,364.8,274,384L374.8,283.2z"/><path style="fill:#68A519;" d="M274.8,384l100.8-100.8c-22.4,9.6-52,14.4-77.6,31.2"/><path style="fill:#528C00;" d="M274.8,384l100.8-100.8c-22.4,9.6-55.2,36-80,52.8"/></g>
+            </svg>
+        </div>
+    </div>
+    
+    <div id="main-content" class="min-h-screen opacity-0">
+      <div id="toast-container"></div>
+      <main id="chatbot-container"></main>
+      <section id="results-container" class="hidden"></section>
+      <section id="about-container"></section>
+      <footer id="footer-container"></footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='animations.js') }}"></script>
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
