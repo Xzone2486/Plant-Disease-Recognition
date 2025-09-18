@@ -36,7 +36,17 @@ This project helps farmers and researchers quickly identify crop health issues a
 - Uses deep learning model (TensorFlow/Keras)  
 - Flask-based web interface (migrated from Streamlit)  
 - Visualization of training/testing process (via notebooks)  
-- Pre-trained model available (`trained_model.h5`)  
+- Pre-trained model available (`trained_model.h5`)
+
+---
+
+## 📚 Dataset Used  
+
+The model was trained on the **[New Plant Diseases Dataset](https://www.kaggle.com/datasets/vipoooool/new-plant-diseases-dataset)** by *vipoooool* on Kaggle.  
+
+- 📸 Contains **~87,000 RGB images** of healthy and diseased crop leaves  
+- 🌿 Covers **38 different classes** (healthy + multiple disease types)  
+- 🧪 Used for training and testing the deep learning model in this project  
 
 ---
 
@@ -50,13 +60,6 @@ This project helps farmers and researchers quickly identify crop health issues a
 
 ---
 
-## 📚 Dataset Used  
- ```bash
-The model was trained on the **New Plant Diseases Dataset** by *vipoooool* from Kaggle. :contentReference[oaicite:0]{index=0}  
-- Contains ~87,000 RGB images of healthy and diseased crop leaves, across **38 different classes**. :contentReference[oaicite:1]{index=1}  
-- Includes images for both healthy leaf conditions and multiple disease types. :contentReference[oaicite:2]{index=2}  
- ```
----
 
 
 2. **Create virtual environment** (recommended)  
