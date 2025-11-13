@@ -175,7 +175,7 @@ CLASS_NAMES = {
     1: 'Apple___Black_rot',
     2: 'Apple___Cedar_apple_rust',
     3: 'Apple___healthy',
-    4. 'Blueberry___healthy',
+    4: 'Blueberry___healthy',  # <-- FIXED: Was '4.' now '4:'
     5: 'Cherry_(including_sour)___Powdery_mildew',
     6: 'Cherry_(including_sour)___healthy',
     7: 'Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot',
@@ -197,7 +197,7 @@ CLASS_NAMES = {
     23: 'Raspberry___healthy',
     24: 'Soybean___healthy',
     25: 'Squash___Powdery_mildew',
-    26: 'Strawberry___Leaf_scor',
+    26: 'Strawberry___Leaf_scorch',
     27: 'Strawberry___healthy',
     28: 'Tomato___Bacterial_spot',
     29: 'Tomato___Early_blight',
