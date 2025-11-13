@@ -142,29 +142,40 @@
 import streamlit as st
 import tensorflow as tf
 import numpy as np
+from PIL import Image
 
-# ✅ Cache the model so it doesn't reload every time
+# --- Page Configuration ---
+# This should be the first Streamlit command
+st.set_page_config(
+    page_title="Plant Disease Recognition",
+    page_icon="🌿",
+    layout="wide"
+)
+
+# --- Model Loading ---
 @st.cache_resource
 def load_model():
-    return tf.keras.models.load_model('trained_model.keras')
+    """
+    Loads the trained model from the .keras file.
+    Uses st.cache_resource to load only once.
+    """
+    try:
+        model = tf.keras.models.load_model('trained_model.keras')
+        return model
+    except Exception as e:
+        st.error(f"Error loading model: {e}")
+        return None
 
 model = load_model()
 
-# ✅ Prediction function
-def model_prediction(test_image):
-    image = tf.keras.preprocessing.image.load_img(test_image, target_size=(128, 128))
-    input_arr = tf.keras.preprocessing.image.img_to_array(image) / 255.0  # normalize
-    input_arr = np.expand_dims(input_arr, axis=0)  # add batch dimension
-    prediction = model.predict(input_arr)
-    return np.argmax(prediction)
-
-# ✅ Class labels (dict for cleaner mapping)
+# --- Class Labels ---
+# Using the dictionary from your "GPT code" version
 CLASS_NAMES = {
     0: 'Apple___Apple_scab',
     1: 'Apple___Black_rot',
     2: 'Apple___Cedar_apple_rust',
     3: 'Apple___healthy',
-    4: 'Blueberry___healthy',
+    4. 'Blueberry___healthy',
     5: 'Cherry_(including_sour)___Powdery_mildew',
     6: 'Cherry_(including_sour)___healthy',
     7: 'Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot',
@@ -186,7 +197,7 @@ CLASS_NAMES = {
     23: 'Raspberry___healthy',
     24: 'Soybean___healthy',
     25: 'Squash___Powdery_mildew',
-    26: 'Strawberry___Leaf_scorch',
+    26: 'Strawberry___Leaf_scor',
     27: 'Strawberry___healthy',
     28: 'Tomato___Bacterial_spot',
     29: 'Tomato___Early_blight',
@@ -200,83 +211,143 @@ CLASS_NAMES = {
     37: 'Tomato___healthy'
 }
 
-# Sidebar
-st.sidebar.title("Dashboard")
-app_mode = st.sidebar.selectbox("Select Page", ['Home', 'About', 'Disease Recognition'])
+# --- Helper Functions ---
+def model_prediction(image_data):
+    """
+    Preprocesses the image and returns the predicted class index.
+    """
+    # Open the image using PIL
+    image = Image.open(image_data).convert('RGB')
+    
+    # Resize to the model's expected input size
+    image = image.resize((128, 128))
+    
+    # Convert to numpy array and normalize
+    input_arr = tf.keras.preprocessing.image.img_to_array(image) / 255.0
+    
+    # Add batch dimension
+    input_arr = np.expand_dims(input_arr, axis=0)
+    
+    # Make prediction
+    prediction = model.predict(input_arr)
+    return np.argmax(prediction)
 
-# Home Page
-if app_mode == 'Home':
-    st.header("Plant Disease Recognition System")
-    st.image("Plant-diseases-980x380.jpg", use_column_width=True)
-    st.markdown("""
-# 🌿 Plant Disease Recognition System 🔍
+def format_class_name(class_name):
+    """
+    Cleans up the class name for display.
+    Example: 'Apple___Black_rot' -> 'Apple - Black Rot'
+    """
+    return class_name.replace('___', ' - ').replace('_', ' ')
 
-Welcome to the **Plant Disease Recognition System**!  
-Our mission is to help farmers, researchers, and gardeners **identify plant diseases quickly and accurately**, ensuring healthier crops and improved harvests.
+# --- Sidebar Navigation ---
+st.sidebar.title("🌿 Plant-AI Dashboard")
+app_mode = st.sidebar.selectbox(
+    "Select Your Tool",
+    ['Disease Recognition', 'Home', 'About'] # Moved 'Disease Recognition' to the top
+)
 
----
+# --- Page Content ---
 
-## 🚀 How It Works
-1. **Upload an Image**  
-   Go to the **Disease Recognition** page and upload a photo of your plant.  
+if app_mode == 'Disease Recognition':
+    st.title("🌱 Upload an Image to Analyze")
+    st.markdown("Our AI will analyze the image and predict the plant disease (if any).")
 
-2. **Smart Analysis**  
-   Our AI-powered system analyzes the image using advanced machine learning algorithms.  
+    test_image = st.file_uploader(
+        "Upload a plant leaf image:", 
+        type=["jpg", "png", "jpeg"]
+    )
 
-3. **Get Results**  
-   View detected diseases (if any) along with actionable recommendations.  
+    if not test_image:
+        st.info("Please upload an image file to get started.")
+    
+    if test_image and model:
+        # Create columns for side-by-side layout
+        col1, col2 = st.columns(2)
 
----
-
-## 🌟 Why Choose Us?
-- **High Accuracy** → State-of-the-art ML models for reliable detection.  
-- **User-Friendly** → Clean, intuitive interface for everyone.  
-- **Fast & Efficient** → Get results in just a few seconds.  
-
----
-
-## 🏁 Get Started
-👉 Click on the **Disease Recognition** page in the sidebar, upload an image, and experience the power of AI in plant health monitoring!  
-
----
-
-## 👥 About Us
-Learn more about our **team, project goals, and vision** on the **About** page. Together, let’s protect crops and secure a sustainable future. 🌱
-""")
-
-# About Page
-elif app_mode == 'About':
-    st.header("About")
-    st.markdown(""" 
-## 📊 About the Dataset
-
-This dataset has been **recreated using offline augmentation** from the original dataset.  
-The original dataset can be found on the corresponding [GitHub repository](#).  
-
-- Contains **~87,000 RGB images** of healthy and diseased crop leaves.  
-- Images are categorized into **38 different classes**.  
-- The dataset is split into an **80/20 ratio** for training and validation, while preserving the original directory structure.  
-- Additionally, a new **test directory** with 33 images was created for prediction purposes.  
-
----
-
-## 📂 Dataset Structure
-
-1. **Train** → 70,295 images  
-2. **Validation** → 17,572 images  
-3. **Test** → 33 images  
- """)
-
-# Disease Recognition Page
-elif app_mode == "Disease Recognition":
-    st.header("🌱 Disease Recognition")
-    test_image = st.file_uploader("Upload a plant leaf image:", type=["jpg", "png", "jpeg"])
-
-    if test_image:
-        st.image(test_image, use_column_width=True, caption="Uploaded Image")
+        with col1:
+            st.image(test_image, use_column_width=True, caption="Your Uploaded Image")
         
-        if st.button("🔍 Predict"):
-            with st.spinner("Analyzing image... Please wait"):
-                result_index = model_prediction(test_image)
-                prediction = CLASS_NAMES[result_index]
-                st.success(f"✅ Model Prediction: **{prediction}**")
+        with col2:
+            st.markdown("### 🧠 Analysis Result")
+            
+            if st.button("🔍 Analyze This Image"):
+                with st.spinner("🤖 AI is thinking... Please wait..."):
+                    
+                    # Get prediction index
+                    result_index = model_prediction(test_image)
+                    
+                    # Get the raw class name
+                    raw_prediction = CLASS_NAMES[result_index]
+                    
+                    # Format the name for display
+                    formatted_prediction = format_class_name(raw_prediction)
+
+                    # Display the result based on whether it's healthy or not
+                    if "healthy" in formatted_prediction.lower():
+                        st.success(f"**Prediction:** {formatted_prediction}")
+                        st.markdown("🎉 Great news! The plant appears to be healthy.")
+                    else:
+                        st.warning(f"**Prediction:** {formatted_prediction}")
+                        st.markdown("⚠️ A potential issue has been detected. Please review the prediction.")
+
+    elif not model:
+        st.error("Model could not be loaded. Please check server logs.")
+
+
+elif app_mode == 'Home':
+    st.title("🌿 Plant Disease Recognition System")
+    st.image("Plant-diseases-980x380.jpg", use_column_width=True)
+    
+    st.markdown("""
+    Welcome to the **Plant Disease Recognition System**!  
+    Our mission is to help farmers, researchers, and gardeners **identify plant diseases quickly and accurately**, ensuring healthier crops and improved harvests.
+    """)
+    
+    st.divider()
+
+    st.markdown("""
+    ## 🚀 How It Works
+    1. **Upload an Image** Go to the **Disease Recognition** page and upload a photo of your plant.  
+
+    2. **Smart Analysis** Our AI-powered system analyzes the image using advanced machine learning algorithms.  
+
+    3. **Get Results** View detected diseases (if any) along with actionable recommendations.  
+    """)
+    
+    st.divider()
+
+    st.markdown("""
+    ## 🌟 Why Choose Us?
+    - **High Accuracy** → State-of-the-art ML models for reliable detection.  
+    - **User-Friendly** → Clean, intuitive interface for everyone.  
+    - **Fast & Efficient** → Get results in just a few seconds.  
+    """)
+    
+    st.divider()
+    
+    st.markdown("""
+    ## 👥 About Us
+    Learn more about our **team, project goals, and vision** on the **About** page. Together, let’s protect crops and secure a sustainable future. 🌱
+    """)
+
+
+elif app_mode == 'About':
+    st.title("📊 About This Project")
+    st.markdown(""" 
+    ## Dataset Information
+
+    This system is trained on a dataset created using **offline augmentation** from an original public dataset.  
+
+    - Contains **~87,000 RGB images** of healthy and diseased crop leaves.  
+    - Images are categorized into **38 different classes**.  
+    - The dataset was split into an **80/20 ratio** for training and validation.
+    """)
+    
+    st.divider()
+
+    st.markdown("""
+    ## 📂 Dataset Structure
+    1. **Train** → 70,295 images  
+    2. **Validation** → 17,572 images  
+    3. **Test** → 33 images (used for final evaluation)
+    """)
